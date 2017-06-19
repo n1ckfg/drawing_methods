@@ -1,6 +1,48 @@
 
 "use strict";
 
+var isDrawing=false;
+var mouse3D = new THREE.Vector3(0,0,0);
+var debug = true;
+var tempStroke;
+var tempStrokeGeometry;
+var tempPoints = [];
+var minDistance = 0.001;
+var useMinDistance = false;
+var roundValues = true;
+var numPlaces = 7;
+var strokeCounter = 0;
+var defaultColor = [0.667, 0.667, 1];
+var defaultOpacity = 0.85;
+var defaultLineWidth = 0.05;
+var brushPath = "./images/brush.png";
+var texture;
+var special_mtl;
+var strokes = [];
+
+var laScale = 10;
+var laOffset = new THREE.Vector3(0, 0, 0);//100, -20, 150);//95, -22, 50);//(100, -20, 150);
+var laRot = new THREE.Vector3(0, 0, 0);//145, 10, 0);
+
+var useScaleAndOffset = true;
+var globalScale = new THREE.Vector3(0.01, 0.01, 0.01);
+var globalOffset = new THREE.Vector3(0, 0, 0);
+
+function createMtl(color, opacity, lineWidth) {
+    var mtl = new THREE.MeshLineMaterial({
+        useMap: 1,
+        map: texture,
+        transparent: true,
+        color: new THREE.Color(color[0],color[1],color[2]),
+        opacity: opacity, 
+        lineWidth: lineWidth,
+        depthWrite: false,
+        depthTest: false,
+        blending: THREE.AdditiveBlending
+    });
+    return mtl;
+}
+
 function onMouseDown(event) {                
     updateMousePos(event);
     beginStroke(mouse3D.x, mouse3D.y, mouse3D.z);
@@ -17,12 +59,26 @@ function onMouseMove(event) {
     }
 }
 
+function onTouchStart(event) {                
+    updateMousePos(event);
+    beginStroke(mouse3D.x, mouse3D.y, mouse3D.z);
+}
+
+function onTouchEnd(event) {
+    endStroke();
+}
+
+function onTouchMove(event) {
+    if (isDrawing) {
+        updateMousePos(event);
+        updateStroke(mouse3D.x, mouse3D.y, mouse3D.z);
+    }
+}
+
 function updateMousePos(event) {
-    mouse3D = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1,   //x
-                                    -( event.clientY / window.innerHeight ) * 2 + 1,  //y
-                                    0.5 );                                            //z
+    mouse3D = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
     mouse3D.unproject(camera);   
-    if (latkDebug) console.log(mouse3D);
+    if (debug) console.log(mouse3D);
 }
 
 // ~ ~ ~ 
@@ -32,7 +88,7 @@ function beginStroke(x, y, z) {
     tempPoints = [];
     //clearTempStroke();
     createTempStroke(x, y, z);
-    if (latkDebug) console.log("Begin " + tempStroke.name + ".");
+    if (debug) console.log("Begin " + tempStroke.name + ".");
 }
 
 function updateStroke(x, y, z) {
@@ -41,21 +97,21 @@ function updateStroke(x, y, z) {
     if (p.distanceTo(tempPoints[tempPoints.length-1]) > minDistance) {
         clearTempStroke();
         createTempStroke(x, y, z);
-        if (latkDebug) console.log("Update " + tempStroke.name + ": " + tempStrokeGeometry.vertices.length + " points."); 
+        if (debug) console.log("Update " + tempStroke.name + ": " + tempStrokeGeometry.vertices.length + " points."); 
     }
 }
 
 function endStroke() {  // TODO draw on new layer
     isDrawing = false;
-    var last = layers.length-1;
-    layers[last].frames[layers[last].counter].push(tempStroke);
-    //~
-    socket.emit("clientStrokeToServer", tempStrokeToJson());
+    strokes.push(tempStroke);
     //~
     clearTempStroke();
     refreshFrameLast();
-    if (latkDebug) console.log("End " + layers[last].frames[layers[last].counter][layers[last].frames[layers[last].counter].length-1].name + ".");
     strokeCounter++;
+}
+
+function refreshFrameLast() {  // TODO draw on new layer
+    scene.add(strokes[strokes.length-1]);
 }
 
 function addTempPoints(x, y, z) {
@@ -81,73 +137,26 @@ function createTempStroke(x, y , z) {
 function clearTempStroke() {
     try {
         scene.remove(tempStroke);
-        if (latkDebug) console.log("Removed temp stroke.")
+        if (debug) console.log("Removed temp stroke.")
     } catch (e) { }       
 }
 
-function animate(timestamp) {
-    if (viveMode) updateControllers();
-
-    if (armFrameForward) {
-        armFrameForward = false;
-        isPlaying = false;
-        frameForward();
-        if (latkDebug) console.log("ff: " + counter);
-    }
-    if (armFrameBack) {
-        armFrameBack = false;
-        isPlaying = false;
-        frameBack();
-        if (latkDebug) console.log("rew: " + counter);
-    }
-    if (armTogglePause) {
-        isPlaying = !isPlaying;
-        if (latkDebug) console.log("playing: " + isPlaying);
-        armTogglePause = false;
-    }
-
-    if (isPlaying) {
-        if (!useAudioSync && !hidden) {
-            pTime = time;
-            time = new Date().getTime() / 1000;
-            frameDelta += time - pTime;
-        } else if (useAudioSync && !hidden) {
-            /*
-            if (subtitleText) {
-                subtitleText.lookAt(camera);
-                subtitleText.rotation.set(0, -45, 0);
-            }
-            */
-        }
-
-        if (frameDelta >= frameInterval) {
-            frameDelta = 0;
-
-            frameMain();
-        }
-    }
-
-    if (useAudioSync && !hidden) {
-        if (subtitleText) {
-            subtitleText.lookAt(camera);
-            subtitleText.rotation.set(0, -45, 0);
-        }
-    }
-        
-    if (armSaveJson) {
-        armSaveJson = false;
-        isPlaying = false;
-        writeJson();
-    }   
-    
-    render(timestamp);
+function animate() {
+    render();
+    requestAnimationFrame(animate);         
 }
 
 function main() {
-    document.addEventListener("visibilitychange", visibilityChanged);
+	texture = THREE.ImageUtils.loadTexture(brushPath);
+    special_mtl = createMtl(defaultColor, defaultOpacity, defaultLineWidth/1.5);
+
     document.addEventListener("mousedown", onMouseDown);
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
+
+    document.addEventListener("touchstart", onTouchStart);
+    document.addEventListener("touchmove", onTouchMove);
+    document.addEventListener("touchend", onTouchEnd);
 
     init();
 
