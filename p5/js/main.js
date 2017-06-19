@@ -1,66 +1,117 @@
 "use strict";
 
-var img;
-var lastImg;
-
-var blockDrawing = false;
-var bgColor, currentColor;
-
-var brushSizeMax = 40;
-var brushSizeMin = 2;
-var brushScale = 0.25;
-var brushSizeCurrent = brushSizeMax * brushScale;
-var brushOpacity = 0.75;
-var brushScaleStep = 0.05;
+var bgColor;
+var brushColor;
+var brushSize = 10;
+var brushOpacity = 0.7;
+var strokes = [];
+var currentStroke;
 
 function setup() {
 	pixelDensity(1);
 	createCanvas(displayWidth, displayHeight);
 
-	img = createGraphics(width, height);
-	lastImg = createGraphics(width, height);
-
 	bgColor = color(127);
-	currentColor = color(0);
-
-	img.background(bgColor);
-    lastImg.background(bgColor);
+	brushColor = color(0, brushOpacity * 255);
 }
 
 function draw() {
-    image(img, 0, 0, width, height);
+    background(bgColor);
 
-	 if (mouseIsPressed && !blockDrawing) {
-        img.strokeWeight(brushSizeCurrent);
-        img.stroke(color(red(currentColor), green(currentColor), blue(currentColor), 255 * brushOpacity));
-        img.line(mouseX, mouseY, pmouseX, pmouseY);
-	}		
+	if (mouseIsPressed) {
+		strokes[strokes.length-1].points.push(createVector(mouseX, mouseY));
+	}
+
+	for (var i=0; i<strokes.length; i++) {
+		strokes[i].run();
+	}
 }
 
 function mousePressed() {
-    lastImg.image(img, 0, 0, width, height);
-    console.log("undo state saved");
+	strokes.push(new Stroke(brushColor, brushSize));
 }
 
 function mouseReleased() {
-    blockDrawing = false;
+	strokes[strokes.length-1].refine();
 }
 
 function touchStarted() {
-    lastImg.image(img, 0, 0, width, height);
-    console.log("undo state saved");
+	strokes.push(new Stroke(brushColor, brushSize));
 }
 
 function touchMoved() {
-    if (!blockDrawing && (ptouchX != 0 && ptouchY!= 0)) {
-    	img.strokeWeight(brushSizeCurrent);
-        img.stroke(color(red(currentColor), green(currentColor), blue(currentColor), 255 * brushOpacity));
-        img.line(touchX, touchY, ptouchX, ptouchY);
-        
-        return false;
-    }
+    try {
+    	if (touchX != 0 && touchY!= 0) {
+			strokes[strokes.length-1].points.push(createVector(touchX, touchY));
+    	}
+    } catch (e) { }
 }
 
 function touchEnded() {
-    blockDrawing = false;
+	strokes[strokes.length-1].refine();
+}
+
+class Stroke {
+
+	constructor(brushColor, brushSize) {
+		this.points = [];
+		this.brushColor = brushColor;
+		this.brushSize = brushSize;
+		this.smoothReps = 20;
+		this.splitReps = 3;
+	}
+
+	draw() {
+		noFill();
+		stroke(this.brushColor);
+		strokeWeight(this.brushSize);
+		beginShape();
+		for (var i=0; i<this.points.length; i++) {
+			vertex(this.points[i].x, this.points[i].y);
+		}
+		endShape();
+	}
+
+	run() {
+		this.draw();
+	}
+
+	smooth() {
+        var weight = 18;
+        var scale = 1.0 / (weight + 2);
+        var nPointsMinusTwo = this.points.length - 2;
+        var lower, upper, center;
+
+        for (var i = 1; i < nPointsMinusTwo; i++) {
+            lower = this.points[i-1];
+            center = this.points[i];
+            upper = this.points[i+1];
+
+            center.x = (lower.x + weight * center.x + upper.x) * scale;
+            center.y = (lower.y + weight * center.y + upper.y) * scale;
+        }
+	}
+
+	split() {
+		for (var i = 1; i < this.points.length; i+=2) {
+			var x = (this.points[i].x + this.points[i-1].x) / 2;
+			var y = (this.points[i].y + this.points[i-1].y) / 2;
+			var p = createVector(x, y);
+			this.points.splice(i, 0, p);
+		}
+	}
+
+	refine() {
+		for (var i=0; i<this.splitReps; i++){
+			this.split();	
+			this.smooth();	
+		}
+		var extraSmoothing = this.smoothReps - this.splitReps;
+		if (extraSmoothing > 0) {
+			for (var i=0; i<extraSmoothing; i++){
+				this.smooth();		
+	     	}
+     	}		
+	}
+
 }

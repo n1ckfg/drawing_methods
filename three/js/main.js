@@ -14,7 +14,7 @@ var numPlaces = 7;
 var strokeCounter = 0;
 var defaultColor = [1,1,1];
 var defaultOpacity = 0.8;
-var defaultLineWidth = 0.02;
+var defaultLineWidth = 0.012;
 var brushPath = "./images/brush_inv.png";
 var texture = THREE.ImageUtils.loadTexture(brushPath);
 var special_mtl = createMtl(defaultColor, defaultOpacity, defaultLineWidth);
@@ -162,3 +162,66 @@ function main() {
 }
 
 window.onload = main;
+
+class Stroke {
+
+    constructor() {
+        this.points = [];
+        this.brushColor = brushColor;
+        this.brushSize = brushSize;
+        this.smoothReps = 20;
+        this.splitReps = 3;
+    }
+
+    update() {
+        //
+    }
+    
+    draw() {
+        //
+    }
+
+    run() {
+        this.update();
+        this.draw();
+    }
+
+    smooth() {
+        var weight = 18;
+        var scale = 1.0 / (weight + 2);
+        var nPointsMinusTwo = this.points.length - 2;
+        var lower, upper, center;
+
+        for (var i = 1; i < nPointsMinusTwo; i++) {
+            lower = this.points[i-1];
+            center = this.points[i];
+            upper = this.points[i+1];
+
+            center.x = (lower.x + weight * center.x + upper.x) * scale;
+            center.y = (lower.y + weight * center.y + upper.y) * scale;
+        }
+    }
+
+    split() {
+        for (var i = 1; i < this.points.length; i+=2) {
+            var x = (this.points[i].x + this.points[i-1].x) / 2;
+            var y = (this.points[i].y + this.points[i-1].y) / 2;
+            var p = createVector(x, y);
+            this.points.splice(i, 0, p);
+        }
+    }
+
+    refine() {
+        for (var i=0; i<this.splitReps; i++){
+            this.split();   
+            this.smooth();  
+        }
+        var extraSmoothing = this.smoothReps - this.splitReps;
+        if (extraSmoothing > 0) {
+            for (var i=0; i<extraSmoothing; i++){
+                this.smooth();      
+            }
+        }       
+    }
+
+}
