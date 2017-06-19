@@ -188,6 +188,7 @@ class Stroke {
             center.x = (lower.x + weight * center.x + upper.x) * scale;
             center.y = (lower.y + weight * center.y + upper.y) * scale;
             center.z = (lower.z + weight * center.z + upper.z) * scale;
+            this.points[i] = center;
         }
     }
 
