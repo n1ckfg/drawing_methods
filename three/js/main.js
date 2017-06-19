@@ -12,21 +12,13 @@ var useMinDistance = false;
 var roundValues = true;
 var numPlaces = 7;
 var strokeCounter = 0;
-var defaultColor = [0.667, 0.667, 1];
-var defaultOpacity = 0.85;
-var defaultLineWidth = 0.05;
-var brushPath = "./images/brush.png";
-var texture;
-var special_mtl;
+var defaultColor = [1,1,1];
+var defaultOpacity = 0.8;
+var defaultLineWidth = 0.02;
+var brushPath = "./images/brush_inv.png";
+var texture = THREE.ImageUtils.loadTexture(brushPath);
+var special_mtl = createMtl(defaultColor, defaultOpacity, defaultLineWidth);
 var strokes = [];
-
-var laScale = 10;
-var laOffset = new THREE.Vector3(0, 0, 0);//100, -20, 150);//95, -22, 50);//(100, -20, 150);
-var laRot = new THREE.Vector3(0, 0, 0);//145, 10, 0);
-
-var useScaleAndOffset = true;
-var globalScale = new THREE.Vector3(0.01, 0.01, 0.01);
-var globalOffset = new THREE.Vector3(0, 0, 0);
 
 function createMtl(color, opacity, lineWidth) {
     var mtl = new THREE.MeshLineMaterial({
@@ -38,7 +30,7 @@ function createMtl(color, opacity, lineWidth) {
         lineWidth: lineWidth,
         depthWrite: false,
         depthTest: false,
-        blending: THREE.AdditiveBlending
+        blending: THREE.MultiplyBlending
     });
     return mtl;
 }
@@ -147,9 +139,6 @@ function animate() {
 }
 
 function main() {
-	texture = THREE.ImageUtils.loadTexture(brushPath);
-    special_mtl = createMtl(defaultColor, defaultOpacity, defaultLineWidth/1.5);
-
     document.addEventListener("mousedown", onMouseDown);
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
