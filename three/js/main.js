@@ -51,8 +51,14 @@ function onMouseMove(event) {
     }
 }
 
+function updateMousePos(event) {
+    mouse3D = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
+    mouse3D.unproject(camera);   
+    if (debug) console.log(mouse3D);
+}
+
 function onTouchStart(event) {                
-    updateMousePos(event);
+    updateTouchPos(event);
     beginStroke(mouse3D.x, mouse3D.y, mouse3D.z);
 }
 
@@ -62,15 +68,18 @@ function onTouchEnd(event) {
 
 function onTouchMove(event) {
     if (isDrawing) {
-        updateMousePos(event);
+        updateTouchPos(event);
         updateStroke(mouse3D.x, mouse3D.y, mouse3D.z);
     }
 }
 
-function updateMousePos(event) {
-    mouse3D = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
-    mouse3D.unproject(camera);   
-    if (debug) console.log(mouse3D);
+function updateTouchPos(event) {
+    if (event.targetTouches.length > 0) {
+        var touch = event.targetTouches[0];
+        mouse3D = new THREE.Vector3((touch.pageX / window.innerWidth) * 2 - 1, -(touch.pageY / window.innerHeight) * 2 + 1, 0.5);
+        mouse3D.unproject(camera);   
+        if (debug) console.log(mouse3D);    
+    }
 }
 
 // ~ ~ ~ 
