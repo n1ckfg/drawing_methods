@@ -25,7 +25,7 @@ function main() {
             strokeColor: "black",
             strokeCap: "round",
             strokeWidth: 10,
-            opacity: 0.75 
+            opacity: 0.8 
         });
         paper.view.draw();
     }
@@ -40,10 +40,8 @@ function main() {
 
     // When the mouse is released, we simplify the path:
     tool.onMouseUp = function(event) {
-        var segmentCountOrig = path.segments.length;
         path.smooth();
-        //path.simplify(3);//10);
-        var segmentCount = path.segments.length;
+        path.simplify(1);
         paper.view.draw();
     }
 

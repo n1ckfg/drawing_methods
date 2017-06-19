@@ -3,9 +3,8 @@
 var bgColor;
 var brushColor;
 var brushSize = 10;
-var brushOpacity = 0.7;
+var brushOpacity = 0.8;
 var strokes = [];
-var currentStroke;
 
 function setup() {
 	pixelDensity(1);
@@ -106,12 +105,9 @@ class Stroke {
 			this.split();	
 			this.smooth();	
 		}
-		var extraSmoothing = this.smoothReps - this.splitReps;
-		if (extraSmoothing > 0) {
-			for (var i=0; i<extraSmoothing; i++){
-				this.smooth();		
-	     	}
-     	}		
+		for (var i=0; i<this.smoothReps - this.splitReps; i++){
+			this.smooth();		
+     	}
 	}
 
 }

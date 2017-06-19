@@ -3,27 +3,22 @@
 
 var isDrawing=false;
 var mouse3D = new THREE.Vector3(0,0,0);
-var debug = true;
-var tempStroke;
-var tempStrokeGeometry;
-var tempPoints = [];
+var debug = false;
 var minDistance = 0.001;
-var useMinDistance = false;
-var roundValues = true;
-var numPlaces = 7;
+var useMinDistance = true;
 var strokeCounter = 0;
-var defaultColor = [1,1,1];
-var defaultOpacity = 0.8;
-var defaultLineWidth = 0.012;
+var brushColor = [1,1,1];
+var brushOpacity = 0.8;
+var brushSize = 0.01;
 var brushPath = "./images/brush_inv.png";
-var texture = THREE.ImageUtils.loadTexture(brushPath);
-var special_mtl = createMtl(defaultColor, defaultOpacity, defaultLineWidth);
+var brush_tex = THREE.ImageUtils.loadTexture(brushPath);
+var brush_mtl = createMtl(brushColor, brushOpacity, brushSize);
 var strokes = [];
 
 function createMtl(color, opacity, lineWidth) {
     var mtl = new THREE.MeshLineMaterial({
         useMap: 1,
-        map: texture,
+        map: brush_tex,
         transparent: true,
         color: new THREE.Color(color[0],color[1],color[2]),
         opacity: opacity, 
@@ -83,63 +78,26 @@ function updateTouchPos(event) {
 }
 
 // ~ ~ ~ 
+
 function beginStroke(x, y, z) {
     isDrawing = true;
-    //isPlaying = false;
-    tempPoints = [];
-    //clearTempStroke();
-    createTempStroke(x, y, z);
-    if (debug) console.log("Begin " + tempStroke.name + ".");
+    strokes.push(new Stroke(x, y, z));
+    if (debug) console.log("Begin " + stroke.name + ".");
 }
 
 function updateStroke(x, y, z) {
     var p = new THREE.Vector3(x, y, z);
 
-    if (p.distanceTo(tempPoints[tempPoints.length-1]) > minDistance) {
-        clearTempStroke();
-        createTempStroke(x, y, z);
-        if (debug) console.log("Update " + tempStroke.name + ": " + tempStrokeGeometry.vertices.length + " points."); 
+    if (!useMinDistance || p.distanceTo(strokes[strokes.length-1].points[strokes[strokes.length-1].points.length-1]) > minDistance) {
+        strokes[strokes.length-1].updateMesh(x, y, z);
+    	if (debug) console.log("Update " + strokes[strokes.length-1].name + ": " + strokes[strokes.length-1].geometry.vertices.length + " points."); 
     }
 }
 
-function endStroke() {  // TODO draw on new layer
+function endStroke() {
     isDrawing = false;
-    strokes.push(tempStroke);
-    //~
-    clearTempStroke();
-    refreshFrameLast();
+    strokes[strokes.length-1].refine();
     strokeCounter++;
-}
-
-function refreshFrameLast() {  // TODO draw on new layer
-    scene.add(strokes[strokes.length-1]);
-}
-
-function addTempPoints(x, y, z) {
-    tempPoints.push(new THREE.Vector3(x, y, z));
-    tempStrokeGeometry = new THREE.Geometry();
-    tempStrokeGeometry.dynamic = true;
-    for (var i=0; i<tempPoints.length; i++) {
-        tempStrokeGeometry.vertices.push(tempPoints[i]);
-    }
-    tempStrokeGeometry.verticesNeedUpdate = true;
-    tempStrokeGeometry.__dirtyVertices = true; 
-}
-
-function createTempStroke(x, y , z) {
-    addTempPoints(x, y, z);
-    var line = new THREE.MeshLine();
-    line.setGeometry(tempStrokeGeometry);
-    tempStroke = new THREE.Mesh(line.geometry, special_mtl);
-    tempStroke.name = "stroke" + strokeCounter;
-    scene.add(tempStroke);
-}
-
-function clearTempStroke() {
-    try {
-        scene.remove(tempStroke);
-        if (debug) console.log("Removed temp stroke.")
-    } catch (e) { }       
 }
 
 function animate() {
@@ -165,26 +123,56 @@ window.onload = main;
 
 class Stroke {
 
-    constructor() {
+    constructor(x, y, z) {
         this.points = [];
-        this.brushColor = brushColor;
-        this.brushSize = brushSize;
         this.smoothReps = 20;
         this.splitReps = 3;
+        this.geometry;
+        this.mesh;
+   	    this.addPoints(x, y, z);
+        this.createStroke();
     }
 
-    update() {
-        //
-    }
-    
-    draw() {
-        //
-    }
+	rebuildGeometry() {
+	    this.geometry = new THREE.Geometry();
+	    this.geometry.dynamic = true;
+	    for (var i=0; i<this.points.length; i++) {
+	        this.geometry.vertices.push(this.points[i]);
+	    }
+	    this.geometry.verticesNeedUpdate = true;
+	    this.geometry.__dirtyVertices = true; 
+	}
 
-    run() {
-        this.update();
-        this.draw();
-    }
+	addPoints(x, y, z) {
+	    this.points.push(new THREE.Vector3(x, y, z));
+	    this.rebuildGeometry();
+	}
+
+	clearStroke() {
+	    try {
+	        scene.remove(this.mesh);
+	    } catch (e) { }       
+	}
+
+	createStroke() {
+	    var line = new THREE.MeshLine();
+	    line.setGeometry(this.geometry);
+	    this.mesh = new THREE.Mesh(line.geometry, brush_mtl);
+	    this.mesh.name = "stroke" + strokeCounter;
+	    scene.add(this.mesh);
+	}
+
+	updateMesh(x, y, z) {
+        this.clearStroke();
+	    this.addPoints(x, y, z);
+        this.createStroke();
+	}
+
+	refreshMesh() {
+        this.clearStroke();
+        this.rebuildGeometry();
+        this.createStroke();   
+	}
 
     smooth() {
         var weight = 18;
@@ -199,6 +187,7 @@ class Stroke {
 
             center.x = (lower.x + weight * center.x + upper.x) * scale;
             center.y = (lower.y + weight * center.y + upper.y) * scale;
+            center.z = (lower.z + weight * center.z + upper.z) * scale;
         }
     }
 
@@ -206,7 +195,8 @@ class Stroke {
         for (var i = 1; i < this.points.length; i+=2) {
             var x = (this.points[i].x + this.points[i-1].x) / 2;
             var y = (this.points[i].y + this.points[i-1].y) / 2;
-            var p = createVector(x, y);
+            var z = (this.points[i].z + this.points[i-1].z) / 2;
+            var p = new THREE.Vector3(x, y, z);
             this.points.splice(i, 0, p);
         }
     }
@@ -216,12 +206,10 @@ class Stroke {
             this.split();   
             this.smooth();  
         }
-        var extraSmoothing = this.smoothReps - this.splitReps;
-        if (extraSmoothing > 0) {
-            for (var i=0; i<extraSmoothing; i++){
-                this.smooth();      
-            }
-        }       
+        for (var i=0; i<this.smoothReps - this.splitReps; i++){
+            this.smooth();      
+        }
+		this.refreshMesh();   
     }
 
 }
