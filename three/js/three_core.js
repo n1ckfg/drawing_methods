@@ -1,8 +1,6 @@
 "use strict";
 
-var renderer, scene, camera, controls, effect, clock, light;
-var boxWidth, params, manager, lastRender;
-//var room;
+var renderer, scene, camera;
 
 function init() {
     renderer = new THREE.WebGLRenderer({antialias: false});
@@ -14,21 +12,18 @@ function init() {
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000); // fov, aspect, near, far
+    camera.position.set(window.innerWidth / 2, window.innerHeight / 2, 0);
 
-    /*
-    room = new THREE.Mesh(
-        new THREE.BoxGeometry(6, 6, 6, 10, 10, 10),
-        new THREE.MeshBasicMaterial({ color: 0x202020, wireframe: true })
-    );
-    room.position.y = 0;//3;
-    scene.add(room);
-    */
-    
-    clock = new THREE.Clock;
+    window.addEventListener("resize", onResize);
 }
 
 function render() {
     renderer.render(scene, camera);
 }
 
+function onResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
