@@ -125,8 +125,8 @@ class Stroke {
 
     constructor(x, y, z) {
         this.points = [];
-        this.smoothReps = 20;
-        this.splitReps = 3;
+        this.smoothReps = 10;
+        this.splitReps = 2;
         this.geometry;
         this.mesh;
    	    this.addPoints(x, y, z);

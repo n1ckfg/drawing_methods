@@ -12,6 +12,8 @@ function setup() {
 
 	bgColor = color(127);
 	brushColor = color(0, brushOpacity * 255);
+	strokeCap(ROUND);
+	strokeJoin(ROUND);
 }
 
 function draw() {
@@ -56,8 +58,8 @@ class Stroke {
 		this.points = [];
 		this.brushColor = brushColor;
 		this.brushSize = brushSize;
-		this.smoothReps = 20;
-		this.splitReps = 3;
+		this.smoothReps = 10;
+		this.splitReps = 2;
 	}
 
 	draw() {
