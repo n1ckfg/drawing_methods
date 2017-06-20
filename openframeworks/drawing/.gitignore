@@ -133,3 +133,6 @@ Desktop.ini
 
 .mailmap
 /apps*/
+[Bb]in/
+*.db
+.vs/
