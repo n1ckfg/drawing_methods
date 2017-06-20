@@ -22,8 +22,7 @@ void ofApp :: draw() {
     }
     
     for (int i=0; i<strokes.size(); i++) {
-        stroke s = *strokes[i];
-        s.run();
+        strokes[i] -> run();
     }
     
     frameRateTitle();

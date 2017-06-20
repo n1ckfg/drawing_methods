@@ -39,8 +39,8 @@ void stroke :: draw() {
             ofVec3f toTheRight = unitDirection.getRotated(90, ofVec3f(0,0,1));
             
             float thickness = ofMap(distance, 0, 60, strokeSize, 2, true);
-            ofVec3f leftPoint = thisPoint+toTheLeft*thickness;
-            ofVec3f rightPoint = thisPoint+toTheRight*thickness;
+            ofVec3f leftPoint = thisPoint + toTheLeft * thickness;
+            ofVec3f rightPoint = thisPoint + toTheRight * thickness;
             
             mesh.addVertex(ofVec3f(leftPoint.x, leftPoint.y, leftPoint.z));
             mesh.addVertex(ofVec3f(rightPoint.x, rightPoint.y, rightPoint.z));
