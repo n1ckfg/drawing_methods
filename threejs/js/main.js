@@ -174,7 +174,7 @@ class Stroke {
         this.createStroke();   
 	}
 
-    smooth() {
+    smoothStroke() {
         var weight = 18;
         var scale = 1.0 / (weight + 2);
         var nPointsMinusTwo = this.points.length - 2;
@@ -192,7 +192,7 @@ class Stroke {
         }
     }
 
-    split() {
+    splitStroke() {
         for (var i = 1; i < this.points.length; i+=2) {
             var x = (this.points[i].x + this.points[i-1].x) / 2;
             var y = (this.points[i].y + this.points[i-1].y) / 2;
@@ -204,11 +204,11 @@ class Stroke {
 
     refine() {
         for (var i=0; i<this.splitReps; i++){
-            this.split();   
-            this.smooth();  
+            this.splitStroke();   
+            this.smoothStroke();  
         }
         for (var i=0; i<this.smoothReps - this.splitReps; i++){
-            this.smooth();      
+            this.smoothStroke();      
         }
 		this.refreshMesh();   
     }
