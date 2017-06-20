@@ -2,17 +2,12 @@
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
-    width = ofGetWidth();
-    height = ofGetHeight();
-    pmouseX = 0;
-    pmouseY = 0;
-    bgColor = ofColor(127);
-    fgColor = ofColor(0);
+    //
 }
 
 //--------------------------------------------------------------
 void ofApp :: update() {
-
+    //
 }
 
 //--------------------------------------------------------------
@@ -27,7 +22,8 @@ void ofApp :: draw() {
     }
     
     for (int i=0; i<strokes.size(); i++) {
-        strokes[i] -> run();
+        stroke s = *strokes[i];
+        s.run();
     }
     
     frameRateTitle();

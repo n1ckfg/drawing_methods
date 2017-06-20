@@ -18,9 +18,9 @@ class stroke {
         void refine();
     
         vector <ofVec3f *> points;
-        float strokeSize;
-        ofColor strokeColor;
-        int splitReps;
-        int smoothReps;
+        float strokeSize = 10.0;
+        ofColor strokeColor = ofColor(0);
+        int splitReps = 2;
+        int smoothReps = 10;
 
 };

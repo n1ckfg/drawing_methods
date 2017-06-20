@@ -24,14 +24,12 @@ class ofApp : public ofBaseApp {
 		
         void frameRateTitle();
     
-        int width;
-        int height;
-        int pmouseX;
-        int pmouseY;
+        int pmouseX = 0;
+        int pmouseY = 0;
     
         vector<stroke *> strokes;
     
-        ofColor bgColor;
-        ofColor fgColor;
+        ofColor bgColor = ofColor(127);
+        ofColor fgColor = ofColor(0, 200);
     
 };
