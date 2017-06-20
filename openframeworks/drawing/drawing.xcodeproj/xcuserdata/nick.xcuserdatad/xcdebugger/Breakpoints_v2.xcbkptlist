@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/stroke.cpp"
-            timestampString = "519678445.960566"
+            timestampString = "519679638.75557"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
             landmarkName = "stroke :: splitStroke()"
             landmarkType = "7">
          </BreakpointContent>

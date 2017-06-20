@@ -22,5 +22,6 @@ class stroke {
         ofColor strokeColor = ofColor(0);
         int splitReps = 2;
         int smoothReps = 10;
+        bool drawMesh = true;
 
 };
