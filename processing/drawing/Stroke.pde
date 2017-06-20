@@ -60,7 +60,6 @@ class Stroke {
 
             center.x = (lower.x + weight * center.x + upper.x) * scale;
             center.y = (lower.y + weight * center.y + upper.y) * scale;
-            points.set(i, center);
         }
   }
 
