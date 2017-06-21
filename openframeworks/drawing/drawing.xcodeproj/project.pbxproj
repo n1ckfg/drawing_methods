@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0153C3171EF9830D00C4CA2C /* stroke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0153C3161EF9830D00C4CA2C /* stroke.cpp */; };
+		0153C3171EF9830D00C4CA2C /* Stroke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0153C3161EF9830D00C4CA2C /* Stroke.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
@@ -43,8 +43,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0153C3151EF9830D00C4CA2C /* stroke.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stroke.h; sourceTree = "<group>"; };
-		0153C3161EF9830D00C4CA2C /* stroke.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stroke.cpp; sourceTree = "<group>"; };
+		0153C3151EF9830D00C4CA2C /* Stroke.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stroke.h; sourceTree = "<group>"; };
+		0153C3161EF9830D00C4CA2C /* Stroke.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stroke.cpp; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* drawingDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = drawingDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -105,8 +105,8 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				0153C3151EF9830D00C4CA2C /* stroke.h */,
-				0153C3161EF9830D00C4CA2C /* stroke.cpp */,
+				0153C3151EF9830D00C4CA2C /* Stroke.h */,
+				0153C3161EF9830D00C4CA2C /* Stroke.cpp */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
@@ -212,7 +212,7 @@
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
-				0153C3171EF9830D00C4CA2C /* stroke.cpp in Sources */,
+				0153C3171EF9830D00C4CA2C /* Stroke.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

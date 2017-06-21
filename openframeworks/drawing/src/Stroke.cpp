@@ -1,27 +1,27 @@
 #include "stroke.h"
 
-stroke :: stroke() {
+Stroke :: Stroke() {
     //
 }
 
-stroke :: stroke(ofColor c) {
+Stroke :: Stroke(ofColor c) {
     strokeColor = c;
 }
 
-stroke :: stroke(float s) {
+Stroke :: Stroke(float s) {
     strokeSize = s;
 }
 
-stroke :: stroke(ofColor c, float s) {
+Stroke :: Stroke(ofColor c, float s) {
     strokeColor = c;
     strokeSize = s;
 }
 
-void stroke :: update() {
+void Stroke :: update() {
     //
 }
 
-void stroke :: draw() {
+void Stroke :: draw() {
     ofNoFill();
     ofSetLineWidth(strokeSize);
     ofSetColor(strokeColor);
@@ -29,8 +29,8 @@ void stroke :: draw() {
         ofMesh mesh;
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
         for (int i=1; i<points.size(); i++) {
-            ofVec3f thisPoint = *points[i-1];
-            ofVec3f nextPoint = *points[i];
+            ofVec3f thisPoint = points[i-1];
+            ofVec3f nextPoint = points[i];
             
             ofVec3f direction = (nextPoint - thisPoint);
             float distance = direction.length();
@@ -49,52 +49,52 @@ void stroke :: draw() {
     } else {
         ofBeginShape();
         for (int i=0; i<points.size(); i++) {
-            ofVertex(points[i] -> x, points[i] -> y, points[i] -> z);
+            ofVertex(points[i].x, points[i].y, points[i].z);
         }
         ofEndShape();
     }
 }
 
-void stroke :: run() {
+void Stroke :: run() {
     update();
     draw();
 }
 
-void stroke :: splitStroke() {
-    vector<ofVec3f *> newPoints;
+void Stroke :: splitStroke() {
+    vector<ofVec3f> newPoints;
     for (int i = 1; i < points.size(); i += 2) {
-        ofVec3f center = *points[i];
-        ofVec3f lower = *points[i-1];
+        ofVec3f center = points[i];
+        ofVec3f lower = points[i-1];
         float x = (center.x + lower.x) / 2;
         float y = (center.y + lower.y) / 2;
         float z = (center.z + lower.z) / 2;
         newPoints.push_back(points[i-1]);
-        newPoints.push_back(new ofVec3f(x, y, z));
+        newPoints.push_back(ofVec3f(x, y, z));
         newPoints.push_back(points[i]);
     }
     points.assign(newPoints.begin(), newPoints.end());
 }
 
-void stroke :: smoothStroke() {
+void Stroke :: smoothStroke() {
     float weight = 18;
     float scale = 1.0 / (weight + 2);
     int nPointsMinusTwo = points.size() - 2;
     ofVec3f lower, upper, center;
     
     for (int i = 1; i < nPointsMinusTwo; i++) {
-        lower = *points[i-1];
-        center = *points[i];
-        upper = *points[i+1];
+        lower = points[i-1];
+        center = points[i];
+        upper = points[i+1];
         
         center.x = (lower.x + weight * center.x + upper.x) * scale;
         center.y = (lower.y + weight * center.y + upper.y) * scale;
         center.z = (lower.z + weight * center.z + upper.z) * scale;
         
-        *points[i] = center;
+        points[i] = center;
     }
 }
 
-void stroke :: refine() {
+void Stroke :: refine() {
     for (int i=0; i<splitReps; i++) {
         splitStroke();
         smoothStroke();

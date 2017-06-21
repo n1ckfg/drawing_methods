@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "stroke.h"
+#include "Stroke.h"
 
 class ofApp : public ofBaseApp {
 
@@ -27,7 +27,7 @@ class ofApp : public ofBaseApp {
         int pmouseX = 0;
         int pmouseY = 0;
     
-        vector<stroke *> strokes;
+        vector<Stroke> strokes;
     
         ofColor bgColor = ofColor(127);
         ofColor fgColor = ofColor(0, 200);
