@@ -1,4 +1,4 @@
-#include "stroke.h"
+#include "Stroke.h"
 
 Stroke :: Stroke() {
     //
