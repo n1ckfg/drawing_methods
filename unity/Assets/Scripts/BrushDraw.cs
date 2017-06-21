@@ -7,6 +7,7 @@ public class BrushDraw : MonoBehaviour {
     public BrushMouse brushMouse;
     public BrushStroke brushPrefab;
     public float brushSize = 0.01f;
+    public Color brushColor = new Color(0f, 0f, 0f);
 
     private bool isDrawing = false;
     private List<BrushStroke> strokes = new List<BrushStroke>();
@@ -29,6 +30,7 @@ public class BrushDraw : MonoBehaviour {
         isDrawing = true;
         strokes.Add(Instantiate(brushPrefab, transform));
         strokes[strokes.Count - 1].setBrushSize(brushSize);
+        strokes[strokes.Count - 1].setBrushColor(brushColor);
         strokes[strokes.Count - 1].ren.positionCount = 0;
         addPoint(brushMouse.mousePos);
     }

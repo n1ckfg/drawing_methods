@@ -8,73 +8,91 @@ public class BrushStroke : MonoBehaviour {
     public LineRenderer ren;
 
     private float brushSize = 0.1f;
+    private Color brushColor = new Color(0f, 0f, 0f);
     private int splitReps = 2;
     private int smoothReps = 10;
+    private int colorID;
+    private MaterialPropertyBlock block;
+
 
     private void Awake() {
+        colorID = Shader.PropertyToID("_Color");
+        block = new MaterialPropertyBlock();
         ren = GetComponent<LineRenderer>();
     }
 
     private void Start() {
         setBrushSize(brushSize);
+        setBrushColor(brushColor);
     }
-    public void setBrushSize(float f) {
+
+    public void setBrushSize(float f) {
         brushSize = f;
-        ren.startWidth = f;
-        ren.endWidth = f;
+        ren.widthMultiplier = brushSize;
     }
 
     public float getBrushSize() {
         return brushSize;
     }
 
-    private void smoothStroke() {
+    public void setBrushColor(Color c) {
+        brushColor = c;
+        block.SetColor(colorID, brushColor);
+        ren.SetPropertyBlock(block);
+    }
+
+    public Color getBrushColor() {
+        return brushColor;
+    }
+
+    private List<Vector3> smoothStroke(List<Vector3> pl) {
         float weight = 18f;
         float scale = 1f / (weight + 2f);
-        int nPointsMinusTwo = ren.positionCount - 2;
+        int nPointsMinusTwo = pl.Count - 2;
         Vector3 lower, upper, center;
 
         for (int i = 1; i < nPointsMinusTwo; i++) {
-            lower = ren.GetPosition(i - 1);
-            center = ren.GetPosition(i);
-            upper = ren.GetPosition(i + 1);
+            lower = pl[i - 1];
+            center = pl[i];
+            upper = pl[i + 1];
 
             center.x = (lower.x + weight * center.x + upper.x) * scale;
             center.y = (lower.y + weight * center.y + upper.y) * scale;
             center.z = (lower.z + weight * center.z + upper.z) * scale;
 
-            ren.SetPosition(i, center);
+            pl[i] = center;
         }
+        return pl;
     }
 
-    private void splitStroke() {
-        for (int i = 1; i < ren.positionCount; i += 2) {
-            Vector3 center = ren.GetPosition(i);
-            Vector3 lower = ren.GetPosition(i - 1);
+    private List<Vector3> splitStroke(List<Vector3> pl) {
+        for (int i = 1; i < pl.Count; i += 2) {
+            Vector3 center = pl[i];
+            Vector3 lower = pl[i - 1];
             float x = (center.x + lower.x) / 2f;
             float y = (center.y + lower.y) / 2f;
             float z = (center.z + lower.z) / 2f;
             Vector3 p = new Vector3(x, y, z);
-            spliceLineRenderer(i, p);
+            pl.Insert(i, p);
         }
-    }
-
-    private void spliceLineRenderer(int index, Vector3 pos) {
-        Vector3[] pa = new Vector3[ren.positionCount];
-        ren.GetPositions(pa);
-        List<Vector3> pl = pa.ToList<Vector3>();
-        pl.Insert(index, pos);
-        ren.SetPositions(pl.ToArray());
+        return pl;
     }
 
     public void refine() {
+        Vector3[] pa = new Vector3[ren.positionCount];
+        ren.GetPositions(pa);
+        List<Vector3> pl = pa.ToList<Vector3>();
+
         for (int i = 0; i < splitReps; i++) {
-            splitStroke();
-            smoothStroke();
+            pl = splitStroke(pl);
+            pl = smoothStroke(pl);
         }
         for (int i = 0; i < smoothReps - splitReps; i++) {
-            smoothStroke();
+            pl = smoothStroke(pl);
         }
+
+        ren.positionCount = pl.Count;
+        ren.SetPositions(pl.ToArray());
     }
 
 }
