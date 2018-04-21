@@ -16,8 +16,8 @@ def draw():
     if (len(s.points) < 1 or dist(mouseX, mouseY, pmouseX, pmouseY) > 2):
       s.points.append(PVector(mouseX, mouseY, 0))
 
-  for i in range(0, len(strokes)):
-    strokes[i].run()
+  for st in strokes:
+    st.run()
 
   #surface.setTitle(""+frameRate)
 

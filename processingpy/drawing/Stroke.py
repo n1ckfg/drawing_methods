@@ -1,40 +1,22 @@
 class Stroke(object):
 
-  '''
-  Stroke():
-    points = new ArrayList<PVector>()
-  '''
-  
-  def __init__(self, c):
+  def __init__(self, c=color(0), s=10):
     self.points = []
-    self.strokeSize = 10
-    self.strokeColor = color(0)
+    self.strokeSize = s
     self.smoothReps = 10
     self.splitReps = 2
     self.strokeColor = c
-
-  '''
-  Stroke(s):
-    points = new ArrayList<PVector>()
-    strokeSize = s
-  
-  Stroke(color c, s):
-    points = new ArrayList<PVector>()
-    strokeColor = c
-    strokeSize = s
-  '''
-    
+   
   def update(self):
     pass
 
   def draw(self):
     noFill()
     beginShape()
-    for i in range(0, len(self.points)):
-      p = self.points[i]
+    for pt in self.points:
       strokeWeight(self.strokeSize)
       stroke(self.strokeColor)
-      vertex(p.x, p.y, p.z)
+      vertex(pt.x, pt.y, pt.z)
     
     endShape()
 
