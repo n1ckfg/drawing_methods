@@ -30,6 +30,8 @@ class ofApp : public ofBaseApp {
         vector<Stroke> strokes;
     
         ofColor bgColor = ofColor(127);
-        ofColor fgColor = ofColor(0, 200);
+        ofColor fgColor = ofColor(0, 127, 127, 200);
+    
+        ofTexture tex;
     
 };

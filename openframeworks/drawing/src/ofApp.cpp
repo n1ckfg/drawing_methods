@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
-    //
+    ofLoadImage(tex, "brush.png");
 }
 
 //--------------------------------------------------------------
@@ -58,7 +58,7 @@ void ofApp :: mouseDragged(int x, int y, int button) {
 
 //--------------------------------------------------------------
 void ofApp :: mousePressed(int x, int y, int button) {
-    strokes.push_back(Stroke(fgColor));
+    strokes.push_back(Stroke(fgColor, tex));
 }
 
 //--------------------------------------------------------------

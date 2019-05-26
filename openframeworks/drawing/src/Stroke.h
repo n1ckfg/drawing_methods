@@ -8,10 +8,12 @@ class Stroke {
         Stroke(ofColor c);
         Stroke(float s);
         Stroke(ofColor c, float s);
+        Stroke(ofTexture &_tex);
+        Stroke(ofColor c, ofTexture &_tex);
+        Stroke(float s, ofTexture &_tex);
+        Stroke(ofColor c, float s, ofTexture &_tex);
         virtual ~Stroke(){};
 
-        void update();
-        void draw();
         void run();
         void splitStroke();
         void smoothStroke();
@@ -23,5 +25,7 @@ class Stroke {
         int splitReps = 2;
         int smoothReps = 10;
         bool drawMesh = true;
+        bool useTexture = true;
+        ofTexture tex;
 
 };

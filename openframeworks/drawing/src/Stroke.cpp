@@ -1,33 +1,58 @@
 #include "Stroke.h"
 
 Stroke :: Stroke() {
-    //
+    useTexture = false;
 }
 
 Stroke :: Stroke(ofColor c) {
     strokeColor = c;
+    useTexture = false;
 }
 
 Stroke :: Stroke(float s) {
     strokeSize = s;
+    useTexture = false;
 }
 
 Stroke :: Stroke(ofColor c, float s) {
     strokeColor = c;
     strokeSize = s;
+    useTexture = false;
 }
 
-void Stroke :: update() {
-    //
+Stroke :: Stroke(ofTexture &_tex) {
+    tex = _tex;
+    useTexture = true;
 }
 
-void Stroke :: draw() {
+Stroke :: Stroke(ofColor c, ofTexture &_tex) {
+    strokeColor = c;
+    tex = _tex;
+    useTexture = true;
+}
+
+Stroke :: Stroke(float s, ofTexture &_tex) {
+    strokeSize = s;
+    tex = _tex;
+    useTexture = true;
+}
+
+Stroke :: Stroke(ofColor c, float s, ofTexture &_tex) {
+    strokeColor = c;
+    strokeSize = s;
+    tex = _tex;
+    useTexture = true;
+}
+
+void Stroke :: run() {
     ofNoFill();
     ofSetLineWidth(strokeSize);
     ofSetColor(strokeColor);
+
     if (drawMesh) {
         ofMesh mesh;
         mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        if (useTexture) tex.bind();
         for (int i=1; i<points.size(); i++) {
             ofVec3f thisPoint = points[i-1];
             ofVec3f nextPoint = points[i];
@@ -44,8 +69,15 @@ void Stroke :: draw() {
             
             mesh.addVertex(ofVec3f(leftPoint.x, leftPoint.y, leftPoint.z));
             mesh.addVertex(ofVec3f(rightPoint.x, rightPoint.y, rightPoint.z));
+            
+            if (useTexture) {
+                float v = (float) i / (float) points.size();
+                mesh.addTexCoord(tex.getCoordFromPercent(0.0, v));
+                mesh.addTexCoord(tex.getCoordFromPercent(1.0, v));
+            }
         }
         mesh.draw();
+        if (useTexture) tex.unbind();
     } else {
         ofBeginShape();
         for (int i=0; i<points.size(); i++) {
@@ -53,11 +85,6 @@ void Stroke :: draw() {
         }
         ofEndShape();
     }
-}
-
-void Stroke :: run() {
-    update();
-    draw();
 }
 
 void Stroke :: splitStroke() {
