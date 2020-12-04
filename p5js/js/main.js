@@ -1,10 +1,10 @@
 "use strict";
 
-var bgColor;
-var brushColor;
-var brushSize = 10;
-var brushOpacity = 0.8;
-var strokes = [];
+let bgColor;
+let brushColor;
+let brushSize = 10;
+let brushOpacity = 0.8;
+let strokes = [];
 
 function setup() {
 	pixelDensity(1);
@@ -23,7 +23,7 @@ function draw() {
 		strokes[strokes.length-1].points.push(createVector(mouseX, mouseY));
 	}
 
-	for (var i=0; i<strokes.length; i++) {
+	for (let i=0; i<strokes.length; i++) {
 		strokes[i].run();
 	}
 }
@@ -67,7 +67,7 @@ class Stroke {
 		stroke(this.brushColor);
 		strokeWeight(this.brushSize);
 		beginShape();
-		for (var i=0; i<this.points.length; i++) {
+		for (let i=0; i<this.points.length; i++) {
 			vertex(this.points[i].x, this.points[i].y);
 		}
 		endShape();
@@ -78,12 +78,12 @@ class Stroke {
 	}
 
 	smoothStroke() {
-        var weight = 18;
-        var scale = 1.0 / (weight + 2);
-        var nPointsMinusTwo = this.points.length - 2;
-        var lower, upper, center;
+        let weight = 18;
+        let scale = 1.0 / (weight + 2);
+        let nPointsMinusTwo = this.points.length - 2;
+        let lower, upper, center;
 
-        for (var i = 1; i < nPointsMinusTwo; i++) {
+        for (let i = 1; i < nPointsMinusTwo; i++) {
             lower = this.points[i-1];
             center = this.points[i];
             upper = this.points[i+1];
@@ -94,20 +94,20 @@ class Stroke {
 	}
 
 	splitStroke() {
-		for (var i = 1; i < this.points.length; i+=2) {
-			var x = (this.points[i].x + this.points[i-1].x) / 2;
-			var y = (this.points[i].y + this.points[i-1].y) / 2;
-			var p = createVector(x, y);
+		for (let i = 1; i < this.points.length; i+=2) {
+			let x = (this.points[i].x + this.points[i-1].x) / 2;
+			let y = (this.points[i].y + this.points[i-1].y) / 2;
+			let p = createVector(x, y);
 			this.points.splice(i, 0, p);
 		}
 	}
 
 	refine() {
-		for (var i=0; i<this.splitReps; i++){
+		for (let i=0; i<this.splitReps; i++){
 			this.splitStroke();	
 			this.smoothStroke();	
 		}
-		for (var i=0; i<this.smoothReps - this.splitReps; i++){
+		for (let i=0; i<this.smoothReps - this.splitReps; i++){
 			this.smoothStroke();		
      	}
 	}

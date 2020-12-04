@@ -5,13 +5,13 @@ paper.install(window);
 function main() {
 
     // Get a reference to the canvas object
-    var canvas = document.getElementById("canvas1"); 
+    let canvas = document.getElementById("canvas1"); 
     
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
     
-    var tool = new Tool();
-    var path;
+    let tool = new Tool();
+    let path;
 
     tool.onMouseDown = function(event) { 
         // If we produced a path before, deselect it:
@@ -60,8 +60,8 @@ function main() {
     }
 
     function drawBg() {
-        var rect = new Rectangle(new Point(0, 0), paper.view.viewSize);
-        var rectPath = new Path.Rectangle(rect);
+        let rect = new Rectangle(new Point(0, 0), paper.view.viewSize);
+        let rectPath = new Path.Rectangle(rect);
         rectPath.fillColor = "#7f7f7f";  
         rectPath.sendToBack();  
     }

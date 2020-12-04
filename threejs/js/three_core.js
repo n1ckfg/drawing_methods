@@ -1,6 +1,6 @@
 "use strict";
 
-var renderer, scene, camera;
+let renderer, scene, camera;
 
 function init() {
     renderer = new THREE.WebGLRenderer({antialias: false});
